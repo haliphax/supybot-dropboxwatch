@@ -58,6 +58,7 @@ class DropboxWatch(callbacks.Plugin):
         self.__parent = super(DropboxWatch, self)
         self.__parent.__init__(irc)
         callback = DropboxWatchServerCallback()
+        httpserver.unhook('dropboxwatch')
         httpserver.hook('dropboxwatch', callback)
         interval = conf.supybot.plugins.DropboxWatch.interval()
 
