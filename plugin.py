@@ -59,6 +59,7 @@ class DropboxWatch(callbacks.Plugin):
         self.__parent.__init__(irc)
         callback = DropboxWatchServerCallback()
         httpserver.hook('dropboxwatch', callback)
+        interval = conf.supybot.plugins.DropboxWatch.interval()
 
         def f():
             if events.empty():
@@ -76,7 +77,7 @@ class DropboxWatch(callbacks.Plugin):
                     if path in path_dict:
                         continue
 
-                    path_dict[path] = (list(), list())
+                    path_dict[path] = (set(), set())
 
             try:
                 while not events.empty():
@@ -87,9 +88,9 @@ class DropboxWatch(callbacks.Plugin):
                             updates, deletes = path_dict[path]
 
                             if event[0] == EventType.delete:
-                                deletes.append(event[1])
+                                deletes.add(event[1])
                             else:
-                                updates.append(event[1])
+                                updates.add(event[1])
 
                             path_dict[path] = (updates, deletes)
             except Queue.Empty:
@@ -123,10 +124,11 @@ class DropboxWatch(callbacks.Plugin):
                     irc.queueMsg(ircmsgs.privmsg(chan, output))
 
         try:
-            schedule.addPeriodicEvent(f, 10, name='dropboxwatch', now=False)
-        except AssertionError:
             schedule.removeEvent('dropboxwatch')
-            schedule.addPeriodicEvent(f, 10, name='dropboxwatch', now=False)
+        except KeyError:
+            pass
+
+        schedule.addPeriodicEvent(f, interval, name='dropboxwatch', now=False)
 
     def die(self):
         self.__parent.die()

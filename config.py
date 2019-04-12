@@ -10,6 +10,9 @@ DropboxWatch = conf.registerPlugin('DropboxWatch')
 conf.registerGlobalValue(DropboxWatch, 'apiKey',
                          registry.String('', """The Dropbox API key""",
                                          private=True))
+conf.registerGlobalValue(DropboxWatch, 'interval',
+                         registry.PositiveInteger(60,
+                             """Number of seconds between parsing events"""))
 conf.registerChannelValue(DropboxWatch, 'paths',
                           registry.SpaceSeparatedListOfStrings('',
                               """The list of paths to announce"""))
