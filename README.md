@@ -15,9 +15,7 @@ channels can elect to follow.
 To set these, use the `config` command.
 
 *Note: If any of the global settings are changed, the plugin will need to be
-reloaded. Currently, there is a bug which causes the HTTP callback to remain
-hooked after the plugin has been unloaded, which prevents the HTTP server from
-starting back up properly. If this happens, reload the plugin a second time.*
+reloaded.*
 
 ### channel
 
