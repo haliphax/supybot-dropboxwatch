@@ -58,8 +58,14 @@ class DropboxWatch(callbacks.Plugin):
         self.__parent = super(DropboxWatch, self)
         self.__parent.__init__(irc)
         callback = DropboxWatchServerCallback()
-        httpserver.unhook('dropboxwatch')
-        httpserver.hook('dropboxwatch', callback)
+        self._abbrev = DropboxWatchServerCallback.name.lower()
+
+        for server in httpserver.http_servers:
+            if self._abbrev in server.callbacks:
+                httpserver.unhook(self._abbrev)
+                break
+
+        httpserver.hook(self._abbrev, callback)
         interval = conf.supybot.plugins.DropboxWatch.interval()
 
         def f():
@@ -124,21 +130,21 @@ class DropboxWatch(callbacks.Plugin):
                     log.info('%s >> %s' % (chan, output))
                     irc.queueMsg(ircmsgs.privmsg(chan, output))
 
-        try:
-            schedule.removeEvent('dropboxwatch')
-        except KeyError:
-            pass
+        if self._abbrev in schedule.schedule.events:
+            schedule.removeEvent(self._abbrev)
 
-        schedule.addPeriodicEvent(f, interval, name='dropboxwatch', now=False)
+        schedule.addPeriodicEvent(f, interval, name=self._abbrev, now=False)
 
     def die(self):
         self.__parent.die()
-        httpserver.unhook('dropboxwatch')
 
-        try:
-            schedule.removeEvent('dropboxwatch')
-        except KeyError:
-            pass
+        for server in httpserver.http_servers:
+            if self._abbrev in server.callbacks:
+                httpserver.unhook(self._abbrev)
+                break
+
+        if self._abbrev in schedule.schedule.events:
+            schedule.removeEvent(self._abbrev)
 
 
 Class = DropboxWatch
