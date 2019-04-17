@@ -10,6 +10,9 @@ DropboxWatch = conf.registerPlugin('DropboxWatch')
 conf.registerGlobalValue(DropboxWatch, 'apiKey',
                          registry.String('', """The Dropbox API key""",
                                          private=True))
+conf.registerGlobalValue(DropboxWatch, 'appSecret',
+                         registry.String('', """The Dropbox app secret""",
+                                         private=True))
 conf.registerGlobalValue(DropboxWatch, 'interval',
                          registry.PositiveInteger(60,
                              """Number of seconds between parsing events"""))

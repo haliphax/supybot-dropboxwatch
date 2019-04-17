@@ -1,4 +1,6 @@
 from enum import Enum
+from hashlib import sha256
+import hmac
 from multiprocessing import Queue
 from time import time
 
@@ -39,6 +41,17 @@ class DropboxWatchServerCallback(httpserver.SupyHTTPServerCallback):
         handler.wfile.write(path.replace('/?challenge=', '').encode('utf-8'))
 
     def doPost(self, handler, path, form):
+        signature = handler.headers['X-Dropbox-Signature']
+
+        if not hmac.compare_digest(signature,
+                                   hmac.new(conf.supybot.plugins.DropboxWatch.appSecret().encode('utf-8'),
+                                            form, sha256).hexdigest()):
+            handler.send_response(403)
+            log.warning('Invalid Dropbox signature: %s\n\t%s' % (
+                signature, str(form)))
+            handler.wfile.write('Invalid signature'.encode('utf-8'))
+            return
+
         handler.send_response(200)
         result = self._dbx.files_list_folder_continue(self._cursor)
         self._cursor = result.cursor

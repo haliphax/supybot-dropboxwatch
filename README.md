@@ -8,6 +8,7 @@ channels can elect to follow.
 ### global
 
 - `supybot.plugins.DropboxWatch.apiKey` (String): The Dropbox OAuth2 API key
+- `supybot.plugins.DropboxWatch.appSecret` (String): The Dropbox app secret
 - `supybot.plugins.DropboxWatch.interval` (PositiveInteger): The time (in
   seconds) between polling the event queue for announcement notifications
   (default: 60)
