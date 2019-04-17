@@ -44,7 +44,8 @@ class DropboxWatchServerCallback(httpserver.SupyHTTPServerCallback):
         signature = handler.headers['X-Dropbox-Signature']
 
         if not hmac.compare_digest(signature,
-                                   hmac.new(conf.supybot.plugins.DropboxWatch.appSecret().encode('utf-8'),
+                                   hmac.new((conf.supybot.plugins.DropboxWatch
+                                             .appSecret().encode('utf-8')),
                                             form, sha256).hexdigest()):
             handler.send_response(403)
             log.warning('Invalid Dropbox signature: %s\n\t%s' % (
